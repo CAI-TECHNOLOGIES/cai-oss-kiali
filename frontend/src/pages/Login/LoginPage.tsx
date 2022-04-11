@@ -7,16 +7,14 @@ import {
   Form,
   FormGroup,
   FormHelperText,
-  ListItem,
   ListVariant,
-  LoginFooterItem,
   LoginPage as LoginNext,
   TextInput
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon, ExclamationTriangleIcon } from '@patternfly/react-icons';
 import { KialiAppState, LoginSession, LoginStatus } from '../../store/Store';
 import { AuthStrategy } from '../../types/Auth';
-import { authenticationConfig, kialiLogo } from '../../config';
+import { authenticationConfig} from '../../config';
 import { KialiAppAction } from '../../actions/KialiAppAction';
 import LoginThunkActions from '../../actions/LoginThunkActions';
 import { isAuthStrategyOAuth } from '../../config/AuthenticationConfig';
@@ -184,17 +182,6 @@ export class LoginPage extends React.Component<LoginProps, LoginState> {
     const isLoggingIn = this.props.isPostLoginPerforming || this.props.status === LoginStatus.logging;
     const isLoginButtonDisabled = isLoggingIn || this.props.status === LoginStatus.loggedIn;
 
-    const listItem = (
-      <>
-        <ListItem>
-          <LoginFooterItem href="https://www.kiali.io/">Documentation</LoginFooterItem>
-        </ListItem>
-        <ListItem>
-          <LoginFooterItem href="https://github.com/kiali/kiali">Contribute</LoginFooterItem>
-        </ListItem>
-      </>
-    );
-
     let loginPane: React.ReactFragment;
     if (authenticationConfig.strategy === AuthStrategy.token) {
       loginPane = (
@@ -242,11 +229,7 @@ export class LoginPage extends React.Component<LoginProps, LoginState> {
     return (
       <LoginNext
         footerListVariants={ListVariant.inline}
-        brandImgSrc={kialiLogo}
-        brandImgAlt="Kiali logo"
-        footerListItems={listItem}
-        textContent="Service mesh management for Istio."
-        loginTitle="Log in Kiali"
+        loginTitle="Log in"
       >
         {loginPane}
       </LoginNext>

@@ -3,8 +3,6 @@ import { Alert, Button } from '@patternfly/react-core';
 import { style } from 'typestyle';
 import { isKioskMode } from '../utils/SearchParamUtils';
 
-import kialiTitle from '../assets/img/logo-lightbkg.svg';
-
 type initializingScreenProps = {
   errorMsg?: string;
   errorDetails?: string;
@@ -60,7 +58,6 @@ const InitializingScreen: React.FC<initializingScreenProps> = (props: initializi
 
   return (
     <div className={centerVerticalHorizontalStyle}>
-      <img alt="Kiali Logo" src={kialiTitle} width="200" />
       {props.errorMsg ? (
         <div ref={errorDiv} className={defaultErrorStyle}>
           <Alert variant="danger" title={props.errorMsg} />
