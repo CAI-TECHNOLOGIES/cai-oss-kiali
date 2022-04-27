@@ -49,10 +49,8 @@
     "start:kiali": "npm run build-css && REACT_APP_VERSION=$npm_package_version REACT_APP_NAME=$npm_package_name REACT_APP_GIT_HASH=$(git rev-parse HEAD) react-scripts start",
     "start:prod": "sh -ac '. ./.env.downstream; npm run start:kiali'",
     "test": "npm run build-css && tsc -p . && TEST_RUNNER=1 react-scripts test --env=jsdom __tests__",
-    "snyk": "snyk test",
     "analyze": "source-map-explorer build/static/js/main.*",
     "prettier": "prettier --write \"{src/**/*.{js,jsx,ts,tsx,json,yml,css,scss},travis.yml,*.json}\"",
-    "snyk-protect": "snyk protect",
     "storybook": "start-storybook -p 6006 -s public"
   },
   "dependencies": {
@@ -73,7 +71,7 @@
     "dagre": "0.8.5",
     "cytoscape-popper": "1.0.7",
     "deep-freeze": "0.0.1",
-    "eventemitter3": "4.0.0",
+    "eventemitter3": "4.0.7",
     "js-yaml": "3.13.1",
     "json-beautify": "1.0.1",
     "lodash": "4.17.21",
@@ -133,7 +131,6 @@
     "pretty-quick": "2.0.1",
     "react-scripts": "3.4.4",
     "redux-mock-store": "1.5.3",
-    "snyk": "^1.161.1",
     "source-map-explorer": "1.8.0",
     "typescript": "3.8.3"
   },
@@ -183,7 +180,6 @@
     "last 2 versions",
     "not ie <= 11"
   ],
-  "snyk": true,
   "eslintConfig": {
     "overrides": [
       {
