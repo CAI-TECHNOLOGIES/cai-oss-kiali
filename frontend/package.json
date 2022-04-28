@@ -91,7 +91,7 @@
     "redux-persist-transform-filter": "0.0.20",
     "redux-thunk": "2.3.0",
     "regression": "^2.0.1",
-    "reselect": "4.0.0",
+    "reselect": "4.1.5",
     "screenfull": "5.0.2",
     "seedrandom": "3.0.1",
     "tippy.js": "3.4.1",
