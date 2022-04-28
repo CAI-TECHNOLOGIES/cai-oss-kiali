@@ -83,7 +83,7 @@
     "react-datepicker": "3.8.0",
     "react-dom": "16.13.1",
     "react-flexview": "4.0.3",
-    "react-redux": "7.2.0",
+    "react-redux": "7.2.8",
     "react-resize-detector": "3.4.0",
     "react-router-dom": "5.0.1",
     "redux": "4.0.4",
