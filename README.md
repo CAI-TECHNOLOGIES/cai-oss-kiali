@@ -122,6 +122,9 @@ _____
 ## Build Commands
 ____
 
+Follow these [pre-requisites](https://github.com/CAI-TECHNOLOGIES/kiali/blob/master/README_old.adoc#developer-setup) to set things up.
+Use the folllowing commands to build image.
+
 ```bash
 export PATH=$PATH:/usr/local/go/bin
 echo fs.inotify.max_user_watches=131070 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
