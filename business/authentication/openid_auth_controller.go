@@ -424,8 +424,10 @@ func (c OpenIdAuthController) redirectToAuthServerHandler(w http.ResponseWriter,
 		responseType = "code"
 	}
 
+	prompt := "none"
+
 	// Send redirection to browser
-	redirectUri := fmt.Sprintf("%s?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s&nonce=%s&state=%s",
+	redirectUri := fmt.Sprintf("%s?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s&nonce=%s&state=%s&prompt=%s",
 		authorizationEndpoint,
 		url.QueryEscape(conf.Auth.OpenId.ClientId),
 		responseType,
@@ -433,6 +435,7 @@ func (c OpenIdAuthController) redirectToAuthServerHandler(w http.ResponseWriter,
 		url.QueryEscape(scopes),
 		url.QueryEscape(fmt.Sprintf("%x", nonceHash)),
 		url.QueryEscape(fmt.Sprintf("%x-%s", csrfHash, nowTime.UTC().Format("060102150405"))),
+		prompt,
 	)
 
 	if len(conf.Auth.OpenId.AdditionalRequestParams) > 0 {
