@@ -126,21 +126,17 @@ Follow these [pre-requisites](https://github.com/CAI-TECHNOLOGIES/kiali/blob/mas
 Use the folllowing commands to build image.
 
 ```bash
-mkdir kiali_sources
-cd kiali_sources
-export KIALI_SOURCES=$(pwd)
-
-git clone https://github.com/kiali/kiali.git
-git clone https://github.com/kiali/kiali-operator.git
+git clone https://github.com/CAI-TECHNOLOGIES/cai-oss-kiali.git
 
 # Using Go
 export PATH=$PATH:/usr/local/go/bin
-# Increasing Max Watchers
-echo fs.inotify.max_user_watches=131070 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
 make build test
 make build-ui-test
 make container-build
+
+# Increasing Max Watchers incase of error
+echo fs.inotify.max_user_watches=131070 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
 ```
 
