@@ -38,8 +38,8 @@ CONTAINER_NAME ?= ${IMAGE_ORG}/kiali
 CONTAINER_VERSION ?= dev
 
 # These two vars allow Jenkins to override values.
-QUAY_NAME ?= quay.io/${CONTAINER_NAME}
-QUAY_TAG ?= ${QUAY_NAME}:${CONTAINER_VERSION}
+QUAY_NAME ?= couture/cai-observability
+QUAY_TAG ?= ${QUAY_NAME}:latest
 
 # Identifies the Kiali operator container images that will be built
 OPERATOR_CONTAINER_NAME ?= ${IMAGE_ORG}/kiali-operator
