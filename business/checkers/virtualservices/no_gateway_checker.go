@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	networking_v1beta1 "istio.io/client-go/pkg/apis/networking/v1beta1"
+	networking_v1alpha3 "istio.io/client-go/pkg/apis/networking/v1alpha3"
 
 	"github.com/kiali/kiali/kubernetes"
 	"github.com/kiali/kiali/models"
 )
 
 type NoGatewayChecker struct {
-	VirtualService networking_v1beta1.VirtualService
+	VirtualService networking_v1alpha3.VirtualService
 	GatewayNames   map[string]struct{}
 }
 

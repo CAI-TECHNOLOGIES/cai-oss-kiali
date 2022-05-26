@@ -1,109 +1,69 @@
 package kubernetes
 
 import (
-	"fmt"
-	"math/rand"
-	"sync"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd/api"
 )
 
-// TestClientExpiration Verify the details that clients expire are correct
-func TestClientExpiration(t *testing.T) {
-
+// TestClientExpiry Verify that clients expire
+func TestClientExpiry(t *testing.T) {
 	istioConfig := rest.Config{}
-	clientFactory := newClientFactory(&istioConfig)
+	clientFactory, _ := getClientFactory(&istioConfig, time.Millisecond*100)
 
+	clientEntries := clientFactory.clientEntries
 	// Make sure we are starting off with an empty set of clients
-	assert.Equal(t, 0, clientFactory.getClientsLength())
+	mutex.RLock()
+	assert.Equal(t, 0, len(clientEntries))
+	mutex.RUnlock()
 
-	// Create a single initial test clients
-	authInfo := api.NewAuthInfo()
-	authInfo.Token = "foo-token"
-	_, err := clientFactory.getRecycleClient(authInfo, 100*time.Millisecond)
-	if err != nil {
-		assert.Nil(t, err)
+	mutex.Lock()
+	// Create a single initial test client
+	clientEntries["foo"] = &clientEntry{
+		created: time.Now(),
 	}
+	mutex.Unlock()
 
 	// Verify we have the client
-	assert.Equal(t, 1, clientFactory.getClientsLength())
-	_, found := clientFactory.hasClient(authInfo)
+	mutex.RLock()
+	assert.Equal(t, 1, len(clientEntries))
+	_, found := clientEntries["foo"]
+	mutex.RUnlock()
 	assert.True(t, found)
 
 	// Sleep for a bit and add another client
-	time.Sleep(time.Millisecond * 60)
-	authInfo1 := api.NewAuthInfo()
-	authInfo1.Token = "bar-token"
-	_, err = clientFactory.getRecycleClient(authInfo1, 100*time.Millisecond)
-	if err != nil {
-		assert.Nil(t, err)
+	time.Sleep(time.Millisecond * 25)
+	mutex.Lock()
+	clientEntries["bar"] = &clientEntry{
+		created: time.Now(),
 	}
+	mutex.Unlock()
 
 	// Verify we have both the foo and bar clients
-	assert.Equal(t, 2, clientFactory.getClientsLength())
-	_, found = clientFactory.hasClient(authInfo)
+	mutex.RLock()
+	assert.Equal(t, 2, len(clientEntries))
+	_, found = clientEntries["foo"]
 	assert.True(t, found)
-	_, found = clientFactory.hasClient(authInfo1)
+	_, found = clientEntries["bar"]
 	assert.True(t, found)
+	mutex.RUnlock()
 
 	// Wait for foo to be expired
-	time.Sleep(time.Millisecond * 60)
+	time.Sleep(time.Millisecond * 100)
 	// Verify the client has been removed
-	assert.Equal(t, 1, clientFactory.getClientsLength())
-	_, found = clientFactory.hasClient(authInfo)
+	mutex.RLock()
+	assert.Equal(t, 1, len(clientEntries))
+	_, found = clientEntries["foo"]
 	assert.False(t, found)
-	_, found = clientFactory.hasClient(authInfo1)
+	_, found = clientEntries["bar"]
 	assert.True(t, found)
+	mutex.RUnlock()
 
 	// Wait for bar to be expired
-	time.Sleep(time.Millisecond * 60)
-	assert.Equal(t, 0, clientFactory.getClientsLength())
-}
-
-// TestConcurrentClientExpiration Verify Concurrent clients are expired correctly
-func TestConcurrentClientExpiration(t *testing.T) {
-	istioConfig := rest.Config{}
-	clientFactory := newClientFactory(&istioConfig)
-	count := 100
-
-	wg := sync.WaitGroup{}
-	wg.Add(count)
-
-	for i := 0; i < count; i++ {
-		go func() {
-			authInfo := api.NewAuthInfo()
-			authInfo.Token = fmt.Sprintf("%d", rand.Intn(10000000000))
-			if _, err := clientFactory.getRecycleClient(authInfo, 10*time.Millisecond); err != nil {
-				assert.Nil(t, err)
-			}
-			wg.Done()
-		}()
-	}
-
-	wg.Wait()
-	time.Sleep(3 * time.Second)
-
-	assert.Equal(t, 0, clientFactory.getClientsLength())
-}
-
-// TestConcurrentClientFactory test Concurrently create ClientFactory
-func TestConcurrentClientFactory(t *testing.T) {
-	istioConfig := rest.Config{}
-	count := 100
-
-	wg := sync.WaitGroup{}
-	wg.Add(count)
-
-	for i := 0; i < count; i++ {
-		go func() {
-			newClientFactory(&istioConfig)
-			wg.Done()
-		}()
-	}
-
-	wg.Wait()
+	time.Sleep(time.Millisecond * 125)
+	mutex.RLock()
+	assert.Equal(t, 0, len(clientEntries))
+	mutex.RUnlock()
 }

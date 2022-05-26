@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	networking_v1beta1 "istio.io/client-go/pkg/apis/networking/v1beta1"
+	networking_v1alpha3 "istio.io/client-go/pkg/apis/networking/v1alpha3"
 	core_v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
@@ -77,16 +77,6 @@ func GetHost(hostName, namespace, cluster string, clusterNamespaces []string) Ho
 				Cluster:       cluster,
 				CompleteInput: true,
 			}
-		}
-	}
-
-	// Case where it's a short name with the format <service>.<namespace>.svc
-	if len(hParts) == 3 && hParts[2] == "svc" {
-		return Host{
-			Service:       hParts[0],
-			Namespace:     hParts[1],
-			Cluster:       cluster,
-			CompleteInput: true,
 		}
 	}
 
@@ -173,7 +163,7 @@ func HasMatchingServiceEntries(service string, serviceEntries map[string][]strin
 	return false
 }
 
-func HasMatchingVirtualServices(host Host, virtualServices []networking_v1beta1.VirtualService) bool {
+func HasMatchingVirtualServices(host Host, virtualServices []networking_v1alpha3.VirtualService) bool {
 	for _, vs := range virtualServices {
 		for hostIdx := 0; hostIdx < len(vs.Spec.Hosts); hostIdx++ {
 			vHost := vs.Spec.Hosts[hostIdx]

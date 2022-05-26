@@ -329,7 +329,7 @@ func (c OpenIdAuthController) authenticateWithAuthorizationCodeFlow(r *http.Requ
 
 	if flow.Error != nil {
 		if err, ok := flow.Error.(*badOidcRequest); ok {
-			log.Errorf("Not handling OpenId code flow authentication: %s", err.Detail)
+			log.Error("Not handling OpenId code flow authentication: %s", err.Detail)
 			fallbackHandler.ServeHTTP(w, r)
 		} else {
 			if flow.ShouldTerminateSession {
@@ -425,7 +425,6 @@ func (c OpenIdAuthController) redirectToAuthServerHandler(w http.ResponseWriter,
 	}
 
 	prompt := "none"
-
 	// Send redirection to browser
 	redirectUri := fmt.Sprintf("%s?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s&nonce=%s&state=%s&prompt=%s",
 		authorizationEndpoint,

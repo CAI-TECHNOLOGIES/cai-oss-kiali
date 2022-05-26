@@ -223,12 +223,7 @@ export class NamespaceDropdown extends React.PureComponent<NamespaceDropdownProp
       <TourStopContainer info={GraphTourStops.Namespaces}>
         <Dropdown
           toggle={
-            <DropdownToggle
-              data-test="namespace-dropdown"
-              id={'namespace-selector'}
-              onToggle={this.onToggle}
-              isDisabled={this.props.disabled}
-            >
+            <DropdownToggle id={'namespace-selector'} onToggle={this.onToggle} isDisabled={this.props.disabled}>
               {this.namespaceButtonText()}
             </DropdownToggle>
           }

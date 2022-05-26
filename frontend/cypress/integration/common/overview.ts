@@ -27,12 +27,7 @@ Given('user opens the overview page', () => {
 });
 
 When('user clicks in the {string} view', (view) => {
-    cy.get('button[data-test="overview-type-' + view + '"]')
-        .click()
-        // Using the #loading_kiali_spinner selector we can control when the UI is still loading some data
-        // That may prevent that the test progress in cases where we need more control.
-        .get('#loading_kiali_spinner')
-        .should('not.exist');
+    cy.get('button[data-display-mode="' + view + '"]').click();
 });
 
 When(`user filters {string} namespace`, (ns) => {
@@ -41,9 +36,7 @@ When(`user filters {string} namespace`, (ns) => {
         .should('have.value', 'namespace_search');
     cy.get('input[aria-label="filter_input_value"]')
         .type(ns)
-        .type('{enter}')
-        .get('#loading_kiali_spinner')
-        .should('not.exist');
+        .type('{enter}');
 });
 
 When(`user filters {string} health`, (health) => {
@@ -51,9 +44,7 @@ When(`user filters {string} health`, (health) => {
         .select('Health')
         .should('have.value', 'health');
     cy.get('select[aria-label="filter_select_value"]')
-        .select(health)
-        .get('#loading_kiali_spinner')
-        .should('not.exist');
+        .select(health);
 });
 
 When(`user selects Health for {string}`, (type) => {
@@ -71,19 +62,13 @@ When(`user selects Health for {string}`, (type) => {
     }
     cy.get('button[aria-labelledby^="overview-type"]')
         .click()
-        .get('#loading_kiali_spinner')
-        .should('not.exist');
-    cy.get('button[id^="' + innerId + '"]')
-        .click()
-        .get('#loading_kiali_spinner')
-        .should('not.exist');
+        .get('button[id^="' + innerId + '"]')
+        .click();
 });
 
 When(`user sorts by name desc`, () => {
     cy.get('button[data-sort-asc="true"]')
-        .click()
-        .get('#loading_kiali_spinner')
-        .should('not.exist');
+        .click();
 });
 
 When(`user selects {string} time range`, (interval) => {
@@ -95,27 +80,23 @@ When(`user selects {string} time range`, (interval) => {
     }
     cy.get('button[aria-labelledby^="time_range_duration"]')
         .click()
-        .get('#loading_kiali_spinner')
-        .should('not.exist');
-    cy.get('button[id^="' + innerId + '"]')
-        .click()
-        .get('#loading_kiali_spinner')
-        .should('not.exist');
+        .get('button[id^="' + innerId + '"]')
+        .click();
 });
 
 Then(`user sees the {string} namespace`, (ns) => {
-    cy.get('article[data-test^="' + ns + '"]');
+    cy.get('article[data-namespace="' + ns + '"]');
 });
 
 Then(`user doesn't see the {string} namespace`, (ns) => {
-    cy.get('article[data-test^="' + ns + '"]').should('not.exist');
+    cy.get('article[data-namespace="' + ns + '"]').should('not.exist');
 });
 
 Then(`user sees a {string} {string} namespace`, (view, ns) => {
     if (view === "LIST") {
         cy.get('td[role="gridcell"]').contains(ns);
     } else {
-        cy.get('article[data-test="' + ns + '-' + view +'"]');
+        cy.get('article[data-namespace="' + ns + '"][data-display-mode="' + view + '"]');
     }
 });
 
@@ -132,7 +113,7 @@ Then(`user sees the {string} namespace with {string}`, (ns, type) => {
             innerType = 'service';
             break;
     }
-    cy.get('article[data-test^="' + ns + '"]').find('[data-test="overview-type-' + innerType + '"]');
+    cy.get('article[data-namespace="' + ns + '"]').find('[data-overview-type="' + innerType + '"]');
 });
 
 Then(`user sees the {string} namespace list`, (nslist) => {
@@ -140,10 +121,10 @@ Then(`user sees the {string} namespace list`, (nslist) => {
     cy.get('article')
         .should('have.length', nss.length)
         .each(($a, i) => {
-            expect($a.attr("data-test")).includes(nss[i]);
+            expect($a.attr("data-namespace")).be.eq(nss[i]);
         });
 });
 
 Then(`user sees the {string} namespace with Inbound traffic {string}`, (ns, duration) => {
-    cy.get('article[data-test^="' + ns + '"]').find('span[data-test="sparkline-duration-' + duration + '"]');
+    cy.get('article[data-namespace="' + ns + '"]').find('span[data-sparkline-duration="' + duration + '"]');
 });

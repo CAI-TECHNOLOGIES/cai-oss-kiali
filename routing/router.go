@@ -155,7 +155,9 @@ func serveEnvJsFile(w http.ResponseWriter) {
 		body += fmt.Sprintf("window.HISTORY_MODE='%s';", conf.Server.WebHistoryMode)
 	}
 
-	body += "window.WEB_ROOT = document.getElementsByTagName('base')[0].getAttribute('href').replace(/^https?:\\/\\/[^#?\\/]+/g, '').replace(/\\/+$/g, '')"
+	if webRoot := strings.TrimSuffix(conf.Server.WebRoot, "/"); len(webRoot) > 0 {
+		body += fmt.Sprintf("window.WEB_ROOT='%s';", webRoot)
+	}
 
 	w.Header().Set("content-type", "text/javascript")
 	_, err := io.WriteString(w, body)

@@ -45,8 +45,7 @@ Feature: Kiali Overview page
 
   @overview-page
   Scenario: Sort by name
-    When user filters "alpha" namespace
-    And user filters "beta" namespace
+    When user filters "Failure" health
     And user sorts by name desc
     Then user sees the "beta,alpha" namespace list
 

@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	networking_v1alpha3 "istio.io/client-go/pkg/apis/networking/v1alpha3"
-	networking_v1beta1 "istio.io/client-go/pkg/apis/networking/v1beta1"
 	security_v1beta1 "istio.io/client-go/pkg/apis/security/v1beta1"
 	core_v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -66,8 +65,8 @@ func FilterByHost(host, hostNamespace, serviceName, svcNamespace string) bool {
 	return false
 }
 
-func FilterDestinationRulesByHostname(allDr []networking_v1beta1.DestinationRule, hostname string) []networking_v1beta1.DestinationRule {
-	destinationRules := []networking_v1beta1.DestinationRule{}
+func FilterDestinationRulesByHostname(allDr []networking_v1alpha3.DestinationRule, hostname string) []networking_v1alpha3.DestinationRule {
+	destinationRules := []networking_v1alpha3.DestinationRule{}
 	for _, destinationRule := range allDr {
 		appendDestinationRule := hostname == ""
 		if destinationRule.Spec.Host == hostname {
@@ -80,8 +79,8 @@ func FilterDestinationRulesByHostname(allDr []networking_v1beta1.DestinationRule
 	return destinationRules
 }
 
-func FilterDestinationRulesByNamespaces(namespaces []string, allDr []networking_v1beta1.DestinationRule) []networking_v1beta1.DestinationRule {
-	destinationRules := []networking_v1beta1.DestinationRule{}
+func FilterDestinationRulesByNamespaces(namespaces []string, allDr []networking_v1alpha3.DestinationRule) []networking_v1alpha3.DestinationRule {
+	destinationRules := []networking_v1alpha3.DestinationRule{}
 	for _, dr := range allDr {
 		found := false
 		for _, ns := range namespaces {
@@ -97,8 +96,8 @@ func FilterDestinationRulesByNamespaces(namespaces []string, allDr []networking_
 	return destinationRules
 }
 
-func FilterDestinationRulesByService(allDr []networking_v1beta1.DestinationRule, namespace string, serviceName string) []networking_v1beta1.DestinationRule {
-	destinationRules := []networking_v1beta1.DestinationRule{}
+func FilterDestinationRulesByService(allDr []networking_v1alpha3.DestinationRule, namespace string, serviceName string) []networking_v1alpha3.DestinationRule {
+	destinationRules := []networking_v1alpha3.DestinationRule{}
 	for _, destinationRule := range allDr {
 		appendDestinationRule := serviceName == ""
 		if FilterByHost(destinationRule.Spec.Host, destinationRule.Namespace, serviceName, namespace) {
@@ -131,8 +130,8 @@ func FilterEnvoyFiltersBySelector(workloadSelector string, envoyfilters []networ
 	return filtered
 }
 
-func FilterGatewaysBySelector(workloadSelector string, gateways []networking_v1beta1.Gateway) []networking_v1beta1.Gateway {
-	filtered := []networking_v1beta1.Gateway{}
+func FilterGatewaysBySelector(workloadSelector string, gateways []networking_v1alpha3.Gateway) []networking_v1alpha3.Gateway {
+	filtered := []networking_v1alpha3.Gateway{}
 	workloadLabels := mapWorkloadSelector(workloadSelector)
 	for _, gw := range gateways {
 		wkLabelsS := []string{}
@@ -149,9 +148,9 @@ func FilterGatewaysBySelector(workloadSelector string, gateways []networking_v1b
 	return filtered
 }
 
-func FilterGatewaysByVirtualServices(allGws []networking_v1beta1.Gateway, allVs []networking_v1beta1.VirtualService) []networking_v1beta1.Gateway {
+func FilterGatewaysByVirtualServices(allGws []networking_v1alpha3.Gateway, allVs []networking_v1alpha3.VirtualService) []networking_v1alpha3.Gateway {
 	var empty struct{}
-	gateways := []networking_v1beta1.Gateway{}
+	gateways := []networking_v1alpha3.Gateway{}
 	gatewayNames := make(map[string]struct{})
 	for _, vs := range allVs {
 		for _, gwn := range vs.Spec.Gateways {
@@ -339,8 +338,8 @@ func FilterServicesByLabels(selector labels.Selector, allServices []core_v1.Serv
 	return services
 }
 
-func FilterServiceEntriesByHostname(serviceEntries []networking_v1beta1.ServiceEntry, hostname string) []networking_v1beta1.ServiceEntry {
-	filtered := []networking_v1beta1.ServiceEntry{}
+func FilterServiceEntriesByHostname(serviceEntries []networking_v1alpha3.ServiceEntry, hostname string) []networking_v1alpha3.ServiceEntry {
+	filtered := []networking_v1alpha3.ServiceEntry{}
 	for _, se := range serviceEntries {
 		for _, h := range se.Spec.Hosts {
 			if h == hostname {
@@ -352,8 +351,8 @@ func FilterServiceEntriesByHostname(serviceEntries []networking_v1beta1.ServiceE
 	return filtered
 }
 
-func FilterSidecarsBySelector(workloadSelector string, sidecars []networking_v1beta1.Sidecar) []networking_v1beta1.Sidecar {
-	filtered := []networking_v1beta1.Sidecar{}
+func FilterSidecarsBySelector(workloadSelector string, sidecars []networking_v1alpha3.Sidecar) []networking_v1alpha3.Sidecar {
+	filtered := []networking_v1alpha3.Sidecar{}
 	workloadLabels := mapWorkloadSelector(workloadSelector)
 	for _, sc := range sidecars {
 		wkLabelsS := []string{}
@@ -372,8 +371,8 @@ func FilterSidecarsBySelector(workloadSelector string, sidecars []networking_v1b
 	return filtered
 }
 
-func FilterVirtualServicesByHostname(allVs []networking_v1beta1.VirtualService, hostname string) []networking_v1beta1.VirtualService {
-	filtered := []networking_v1beta1.VirtualService{}
+func FilterVirtualServicesByHostname(allVs []networking_v1alpha3.VirtualService, hostname string) []networking_v1alpha3.VirtualService {
+	filtered := []networking_v1alpha3.VirtualService{}
 	for _, vs := range allVs {
 		appendVirtualService := hostname == ""
 		if !appendVirtualService {
@@ -416,8 +415,8 @@ func FilterVirtualServicesByHostname(allVs []networking_v1beta1.VirtualService, 
 	return filtered
 }
 
-func FilterVirtualServicesByService(allVs []networking_v1beta1.VirtualService, namespace string, serviceName string) []networking_v1beta1.VirtualService {
-	filtered := []networking_v1beta1.VirtualService{}
+func FilterVirtualServicesByService(allVs []networking_v1alpha3.VirtualService, namespace string, serviceName string) []networking_v1alpha3.VirtualService {
+	filtered := []networking_v1alpha3.VirtualService{}
 	for _, vs := range allVs {
 		appendVirtualService := serviceName == ""
 		if !appendVirtualService {
@@ -460,7 +459,7 @@ func FilterVirtualServicesByService(allVs []networking_v1beta1.VirtualService, n
 	return filtered
 }
 
-func FilterVirtualServiceByRoute(vs *networking_v1beta1.VirtualService, service string, namespace string) bool {
+func FilterVirtualServiceByRoute(vs *networking_v1alpha3.VirtualService, service string, namespace string) bool {
 	if vs == nil {
 		return false
 	}

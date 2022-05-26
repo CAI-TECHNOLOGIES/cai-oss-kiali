@@ -15,14 +15,10 @@ import (
 
 var factory *clientFactory
 
-// mutex for when modifying the stored clients
+// Mutex for when modifying the stored clients
 var mutex = &sync.RWMutex{}
 
-// when a client is expired, a signal with its tokenHash will be sent to recycleChan
-var recycleChan = make(chan string, 10)
-
-// defaultExpirationTime set the default expired time of a client
-const defaultExpirationTime = time.Minute * 15
+const expirationTime = time.Minute * 15
 
 // ClientFactory interface for the clientFactory object
 type ClientFactory interface {
@@ -33,7 +29,13 @@ type ClientFactory interface {
 type clientFactory struct {
 	ClientFactory
 	baseIstioConfig *rest.Config
-	clientEntries   map[string]*ClientInterface
+	clientEntries   map[string]*clientEntry
+}
+
+// clientEntry stored the client and its created timestamp
+type clientEntry struct {
+	client  ClientInterface
+	created time.Time
 }
 
 // GetClientFactory returns the client factory. Creates a new one if necessary
@@ -53,7 +55,7 @@ func GetClientFactory() (ClientFactory, error) {
 			Burst:           config.Burst,
 		}
 
-		return newClientFactory(&istioConfig), nil
+		return getClientFactory(&istioConfig, expirationTime)
 
 	}
 	return factory, nil
@@ -61,25 +63,24 @@ func GetClientFactory() (ClientFactory, error) {
 
 // newClientFactory allows for specifying the config and expiry duration
 // Mock friendly for testing purposes
-func newClientFactory(istioConfig *rest.Config) *clientFactory {
+func getClientFactory(istioConfig *rest.Config, expiry time.Duration) (*clientFactory, error) {
+	mutex.Lock()
 	if factory == nil {
-		clientEntriesMap := make(map[string]*ClientInterface)
+		clientEntriesMap := make(map[string]*clientEntry)
 
 		factory = &clientFactory{
 			baseIstioConfig: istioConfig,
 			clientEntries:   clientEntriesMap,
 		}
 
-		// after creating a client factory
-		// background goroutines will be watching the clients` expiration
-		// if a client is expired, it will be removed from clientEntries
-		go watchClients(clientEntriesMap)
+		go watchClients(clientEntriesMap, expiry)
 	}
-	return factory
+	mutex.Unlock()
+	return factory, nil
 }
 
-// newClient creates a new ClientInterface based on a users k8s token
-func (cf *clientFactory) newClient(authInfo *api.AuthInfo, expirationTime time.Duration) (ClientInterface, error) {
+// NewClient creates a new ClientInterface based on a users k8s token
+func (cf *clientFactory) newClient(authInfo *api.AuthInfo) (ClientInterface, error) {
 	config := *cf.baseIstioConfig
 
 	config.BearerToken = authInfo.Token
@@ -133,89 +134,61 @@ func (cf *clientFactory) newClient(authInfo *api.AuthInfo, expirationTime time.D
 		config.Impersonate.Extra = authInfo.ImpersonateUserExtra
 	}
 
-	newClient, err := NewClientFromConfig(&config)
-
-	// check if client is created correctly
-	// if it is true, run to recycle client
-	// if it is not, the token should not be added to recycleChan
-	go func(token string, err error) {
-		if err == nil {
-			<-time.After(expirationTime)
-			recycleChan <- token
-		}
-	}(getTokenHash(authInfo), err)
-
-	return newClient, err
+	return NewClientFromConfig(&config)
 }
 
 // GetClient returns a client for the specified token. Creating one if necessary.
 func (cf *clientFactory) GetClient(authInfo *api.AuthInfo) (ClientInterface, error) {
-	client, err := cf.getClient(authInfo)
+	clientEntry, err := cf.getClientEntry(authInfo)
 	if err != nil {
 		return nil, err
 	}
-	return *client, nil
+	return clientEntry.client, nil
 }
 
-// getClient returns a client for the specified token. Creating one if necessary.
-func (cf *clientFactory) getClient(authInfo *api.AuthInfo) (*ClientInterface, error) {
-	return cf.getRecycleClient(authInfo, defaultExpirationTime)
-}
-
-// getRecycleClient returns a client for the specified token with expirationTime. Creating one if necessary.
-func (cf *clientFactory) getRecycleClient(authInfo *api.AuthInfo, expirationTime time.Duration) (*ClientInterface, error) {
-	if cEntry, ok := cf.hasClient(authInfo); ok {
+// getClientEntry returns a clientEntry for the specified token. Creating one if necessary.
+func (cf *clientFactory) getClientEntry(authInfo *api.AuthInfo) (*clientEntry, error) {
+	tokenHash := getTokenHash(authInfo)
+	mutex.RLock()
+	cEntry, ok := cf.clientEntries[tokenHash]
+	mutex.RUnlock()
+	if ok {
 		return cEntry, nil
 	} else {
-		client, err := cf.newClient(authInfo, expirationTime)
+		client, err := cf.newClient(authInfo)
 		if err != nil {
 			log.Errorf("Error fetching the Kubernetes client: %v", err)
 			return nil, err
 		}
 
+		cEntry := clientEntry{
+			client:  client,
+			created: time.Now(),
+		}
+
 		mutex.Lock()
-		cf.clientEntries[getTokenHash(authInfo)] = &client
-		internalmetrics.SetKubernetesClients(len(cf.clientEntries))
+		cf.clientEntries[tokenHash] = &cEntry
 		mutex.Unlock()
-		return &client, nil
+		internalmetrics.SetKubernetesClients(len(cf.clientEntries))
+		return &cEntry, nil
 	}
 }
 
-// hasClient check if clientFactory has a client, return the client if clientFactory has it
-func (cf *clientFactory) hasClient(authInfo *api.AuthInfo) (*ClientInterface, bool) {
-	tokenHash := getTokenHash(authInfo)
-	mutex.RLock()
-	cEntry, ok := cf.clientEntries[tokenHash]
-	mutex.RUnlock()
-	return cEntry, ok
-}
-
-// getClientsLength returns the length of clients
-func (cf *clientFactory) getClientsLength() int {
-	mutex.RLock()
-	length := len(cf.clientEntries)
-	mutex.RUnlock()
-	return length
-}
-
-// watchClients listen signal from recycleChan and clean the expired clients
-func watchClients(clientEntries map[string]*ClientInterface) {
+// watchClients loops over clients and removes ones which are too old
+func watchClients(clientEntries map[string]*clientEntry, expiry time.Duration) {
 	for {
-		// listen signal from recycleChan
-		tokenHash, ok := <-recycleChan
-		if !ok {
-			log.Error("recycleChan closed when watching clients")
-			return
-		}
-		// clean expired client with its token hash
+		time.Sleep(expiry)
 		mutex.Lock()
-		delete(clientEntries, tokenHash)
+		for token, clientEntry := range clientEntries {
+			if time.Since(clientEntry.created) > expiry {
+				delete(clientEntries, token)
+			}
+		}
 		internalmetrics.SetKubernetesClients(len(clientEntries))
 		mutex.Unlock()
 	}
 }
 
-// getTokenHash get the token hash of a client
 func getTokenHash(authInfo *api.AuthInfo) string {
 	tokenData := authInfo.Token
 

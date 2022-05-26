@@ -122,21 +122,13 @@ _____
 ## Build Commands
 ____
 
-Follow these [pre-requisites](https://github.com/CAI-TECHNOLOGIES/kiali/blob/master/README_old.adoc#developer-setup) to set things up.
-Use the folllowing commands to build image.
-
 ```bash
-git clone https://github.com/CAI-TECHNOLOGIES/cai-oss-kiali.git
-
-# Using Go
 export PATH=$PATH:/usr/local/go/bin
+echo fs.inotify.max_user_watches=131070 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
 make build test
 make build-ui-test
 make container-build
-
-# Increasing Max Watchers incase of error
-echo fs.inotify.max_user_watches=131070 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
 ```
 
@@ -148,21 +140,3 @@ ____
 - [Tracing](https://kiali.io/docs/features/tracing/) (Through Jaeger)
 - [Validation and Istio-Configuration](https://kiali.io/docs/features/validations/)
 - [Generate application and request routing configuration](https://kiali.io/docs/features/wizards/) 
-
-## Enabling RBAC in Kiali
-____
-
-Refer to [this documentation](https://developer.okta.com/blog/2021/10/08/secure-access-to-aws-eks) for associating the EKS cluster on which kiali is to be brought up with Okta. However use client secret method instead of pkce. Configure `.kube/config` accordingly to include client secret.
-
-```bash
-# For using oidc login
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-
-kubectl oidc-login setup --oidc-issuer-url=ISSUER_URL --oidc-client-secret=CLIENT_SECRET --oidc-client-id=CLIENT_ID
-```
-
-Before bringing up kiali, make sure client secret for kiali is updated. Use the following command to do so, and restart kiali if already up.
-
-```bash
-kubectl create secret generic kiali --from-literal="oidc-secret=meJz3nTIybneGksCvHcpT2UnvIDPX_1ThElOU9Zb" -n istio-system
-```
