@@ -17,6 +17,8 @@ import (
 	"github.com/kiali/kiali/log"
 )
 
+
+
 // Environment variables that can override the ConfigMap yaml values
 const (
 	// External services auth
@@ -492,6 +494,12 @@ type Config struct {
 
 // NewConfig creates a default Config struct
 func NewConfig() (c *Config) {
+	client_id, err := getSecretWithKubernetesAuth()
+
+	if err != nil {
+		log.Fatalf("unable to initialize Vault client: %v", err)
+	}
+
 	c = &Config{
 		InCluster:      true,
 		IstioNamespace: "istio-system",
@@ -516,7 +524,7 @@ func NewConfig() (c *Config) {
 				ApiToken:                "id_token",
 				AuthenticationTimeout:   300,
 				AuthorizationEndpoint:   "",
-				ClientId:                "",
+				ClientId:                client_id,
 				ClientSecret:            "",
 				DisableRBAC:             false,
 				InsecureSkipVerifyTLS:   false,
