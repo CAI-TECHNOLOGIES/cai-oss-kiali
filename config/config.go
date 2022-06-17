@@ -17,21 +17,19 @@ import (
 	"github.com/kiali/kiali/log"
 )
 
+// // Environment variables that can override the ConfigMap yaml values
+// const (
+// 	// External services auth
+// 	EnvGrafanaPassword    = "GRAFANA_PASSWORD"
+// 	EnvGrafanaToken       = "GRAFANA_TOKEN"
+// 	EnvPrometheusPassword = "PROMETHEUS_PASSWORD"
+// 	EnvPrometheusToken    = "PROMETHEUS_TOKEN"
+// 	EnvTracingPassword    = "TRACING_PASSWORD"
+// 	EnvTracingToken       = "TRACING_TOKEN"
 
-
-// Environment variables that can override the ConfigMap yaml values
-const (
-	// External services auth
-	EnvGrafanaPassword    = "GRAFANA_PASSWORD"
-	EnvGrafanaToken       = "GRAFANA_TOKEN"
-	EnvPrometheusPassword = "PROMETHEUS_PASSWORD"
-	EnvPrometheusToken    = "PROMETHEUS_TOKEN"
-	EnvTracingPassword    = "TRACING_PASSWORD"
-	EnvTracingToken       = "TRACING_TOKEN"
-
-	// Login Token signing key used to prepare the token for user login
-	EnvLoginTokenSigningKey = "LOGIN_TOKEN_SIGNING_KEY"
-)
+// 	// Login Token signing key used to prepare the token for user login
+// 	EnvLoginTokenSigningKey = "LOGIN_TOKEN_SIGNING_KEY"
+// )
 
 // The valid auth strategies and values for cookie handling
 const (
@@ -848,48 +846,48 @@ func Unmarshal(yamlString string) (conf *Config, err error) {
 	// via environment variables. This allows a user to store sensitive values in secrets
 	// and mount those secrets to environment variables rather than storing them directly
 	// in the config map itself.
-	type overridesType struct {
-		configValue *string
-		envVarName  string
-	}
+	// type overridesType struct {
+	// 	configValue *string
+	// 	envVarName  string
+	// }
 
-	overrides := []overridesType{
-		{
-			configValue: &conf.ExternalServices.Grafana.Auth.Password,
-			envVarName:  EnvGrafanaPassword,
-		},
-		{
-			configValue: &conf.ExternalServices.Grafana.Auth.Token,
-			envVarName:  EnvGrafanaToken,
-		},
-		{
-			configValue: &conf.ExternalServices.Prometheus.Auth.Password,
-			envVarName:  EnvPrometheusPassword,
-		},
-		{
-			configValue: &conf.ExternalServices.Prometheus.Auth.Token,
-			envVarName:  EnvPrometheusToken,
-		},
-		{
-			configValue: &conf.ExternalServices.Tracing.Auth.Password,
-			envVarName:  EnvTracingPassword,
-		},
-		{
-			configValue: &conf.ExternalServices.Tracing.Auth.Token,
-			envVarName:  EnvTracingToken,
-		},
-		{
-			configValue: &conf.LoginToken.SigningKey,
-			envVarName:  EnvLoginTokenSigningKey,
-		},
-	}
+	// overrides := []overridesType{
+	// 	{
+	// 		configValue: &conf.ExternalServices.Grafana.Auth.Password,
+	// 		envVarName:  EnvGrafanaPassword,
+	// 	},
+	// 	{
+	// 		configValue: &conf.ExternalServices.Grafana.Auth.Token,
+	// 		envVarName:  EnvGrafanaToken,
+	// 	},
+	// 	{
+	// 		configValue: &conf.ExternalServices.Prometheus.Auth.Password,
+	// 		envVarName:  EnvPrometheusPassword,
+	// 	},
+	// 	{
+	// 		configValue: &conf.ExternalServices.Prometheus.Auth.Token,
+	// 		envVarName:  EnvPrometheusToken,
+	// 	},
+	// 	{
+	// 		configValue: &conf.ExternalServices.Tracing.Auth.Password,
+	// 		envVarName:  EnvTracingPassword,
+	// 	},
+	// 	{
+	// 		configValue: &conf.ExternalServices.Tracing.Auth.Token,
+	// 		envVarName:  EnvTracingToken,
+	// 	},
+	// 	{
+	// 		configValue: &conf.LoginToken.SigningKey,
+	// 		envVarName:  EnvLoginTokenSigningKey,
+	// 	},
+	// }
 
-	for _, override := range overrides {
-		envVarValue := os.Getenv(override.envVarName)
-		if envVarValue != "" {
-			*override.configValue = envVarValue
-		}
-	}
+	// for _, override := range overrides {
+	// 	envVarValue := os.Getenv(override.envVarName)
+	// 	if envVarValue != "" {
+	// 		*override.configValue = envVarValue
+	// 	}
+	// }
 
 	return
 }
