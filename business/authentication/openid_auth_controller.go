@@ -396,6 +396,7 @@ func (c OpenIdAuthController) redirectToAuthServerHandler(w http.ResponseWriter,
 		Path:     conf.Server.WebRoot,
 		SameSite: http.SameSiteLaxMode,
 		Value:    nonceCode,
+		Secure:   true,
 	}
 	http.SetCookie(w, &nonceCookie)
 
@@ -522,6 +523,7 @@ func (p *openidFlowHelper) callbackCleanup(w http.ResponseWriter) *openidFlowHel
 		Path:     config.Get().Server.WebRoot,
 		SameSite: http.SameSiteStrictMode,
 		Value:    "",
+		Secure:   true,
 	}
 	http.SetCookie(w, &deleteNonceCookie)
 
