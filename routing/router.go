@@ -18,12 +18,19 @@ import (
 	"github.com/kiali/kiali/prometheus/internalmetrics"
 )
 
+func ensureEndsWithSlash(url string) string {
+	if !strings.HasSuffix(url, "/") {
+		url += "/"
+	}
+	return url
+}
+
 // NewRouter creates the router with all API routes and the static files handler
 func NewRouter() *mux.Router {
 
 	conf := config.Get()
 	webRoot := conf.Server.WebRoot
-	webRootWithSlash := webRoot + "/"
+	webRootWithSlash := ensureEndsWithSlash(webRoot)
 
 	rootRouter := mux.NewRouter().StrictSlash(false)
 	appRouter := rootRouter
