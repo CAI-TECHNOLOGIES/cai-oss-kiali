@@ -9,10 +9,12 @@ import {
   ChartLabel
 } from '@patternfly/react-charts';
 import { VictoryLegend } from 'victory';
+import { EventPropTypeInterface } from 'victory-core';
 
 import { VCLines, VCDataPoint, RichDataPoint } from 'types/VictoryChartInfo';
 import { CustomTooltip } from './CustomTooltip';
-import { VCEvent, addLegendEvent } from 'utils/VictoryEvents';
+import { VCEvent, addLegendEvent} from 'utils/VictoryEvents';
+
 
 type Props = ChartProps & {
   name: string;
@@ -71,13 +73,32 @@ export class SparklineChart extends React.Component<Props, State> {
   private renderChart() {
     const legendHeight = 30;
     let height = this.props.height || 300;
-    const padding = { top: 0, bottom: 0, left: 0, right: 0, ...this.props.padding };
+    const padding = { top: 0, bottom: 0, left: 0, right: 0, ...(this.props.padding as object) };
     const events: VCEvent[] = [];
+    const eventProps: EventPropTypeInterface<string, string[] | number[] | string | number>[] = [];
     if (this.props.showLegend) {
       padding.bottom += legendHeight;
       height += legendHeight;
       this.props.series.forEach((_, idx) => {
         addLegendEvent(events, {
+          legendName: this.props.name + '-legend',
+          idx: idx,
+          serieID: [this.props.name + '-area-' + idx],
+          onClick: () => {
+            if (!this.state.hiddenSeries.delete(idx)) {
+              // Was not already hidden => add to set
+              this.state.hiddenSeries.add(idx);
+            }
+            this.setState({ hiddenSeries: new Set(this.state.hiddenSeries) });
+            return null;
+          },
+          onMouseOver: props => {
+            return {
+              style: { ...props.style, strokeWidth: 4, fillOpacity: 0.5 }
+            };
+          }
+        });
+        addLegendEvent(eventProps, {
           legendName: this.props.name + '-legend',
           idx: idx,
           serieID: [this.props.name + '-area-' + idx],
@@ -117,7 +138,7 @@ export class SparklineChart extends React.Component<Props, State> {
         height={height}
         width={this.state.width}
         padding={padding}
-        events={events}
+        events={eventProps}
         containerComponent={container}
         // Hack: 1 pxl on Y domain padding to prevent harsh clipping (https://github.com/kiali/kiali/issues/2069)
         domainPadding={{ y: 1 }}

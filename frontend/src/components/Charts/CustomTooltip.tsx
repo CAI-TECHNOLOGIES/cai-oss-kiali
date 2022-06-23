@@ -91,16 +91,28 @@ type State = {
 export class CustomTooltip extends React.Component<Props, State> {
   static getDerivedStateFromProps(props: Props): State {
     const head = props.showTime ? getHeader(props.activePoints) : undefined;
-    let height = props.text.length * dy + 2 * yMargin;
+    const text = props.text;
+    let height = 1 * dy + 2 * yMargin;
+    if (Array.isArray(text)) {
+      height = text.length * dy + 2 * yMargin;
+    }
     if (head) {
       height += headSize;
     }
+    let sanitizedTexts: string[] = []
     const texts = Array.isArray(props.text) ? props.text : [props.text];
+
+    for (const iText of texts) {
+      if (typeof iText == "string") {
+        sanitizedTexts.push(iText);
+      }
+    }
+
     const textWidth = Math.max(...texts.map(t => canvasContext.measureText(t).width));
     const width = 50 + (head ? Math.max(textWidth, canvasContext.measureText(head).width) : textWidth);
     return {
       head: head,
-      texts: texts,
+      texts: sanitizedTexts,
       textWidth: textWidth,
       width: width,
       height: height

@@ -1,4 +1,6 @@
 import { RawOrBucket, LineInfo } from '../types/VictoryChartInfo';
+import { EventPropTypeInterface } from 'victory-core';
+import { SyntheticEvent } from 'react';
 
 interface EventItem {
   legendName: string;
@@ -17,9 +19,9 @@ export type VCEvent = {
 };
 
 type EventHandlers = {
-  onClick?: (event: MouseEvent) => EventMutation[];
-  onMouseOver?: (event: MouseEvent) => EventMutation[];
-  onMouseOut?: (event: MouseEvent) => EventMutation[];
+  onClick: (event: SyntheticEvent) => EventMutation[];
+  onMouseOver: (event: SyntheticEvent) => EventMutation[];
+  onMouseOut: (event: SyntheticEvent) => EventMutation[];
 };
 
 type EventMutation = {
@@ -28,8 +30,12 @@ type EventMutation = {
   mutation: (props: RawOrBucket<LineInfo>) => Partial<RawOrBucket<LineInfo>> | null;
 };
 
-export const addLegendEvent = (events: VCEvent[], item: EventItem): void => {
-  const eventHandlers: EventHandlers = {};
+export const addLegendEvent = (events: VCEvent[] | EventPropTypeInterface<string, string[] | number[] | string | number>[], item: EventItem): void => {
+  const eventHandlers: EventHandlers = {
+    onClick: _ => { return [] },
+    onMouseOver: _ => { return [] },
+    onMouseOut: _ => { return [] },
+  };
   if (item.onClick) {
     eventHandlers.onClick = e => {
       e.stopPropagation();

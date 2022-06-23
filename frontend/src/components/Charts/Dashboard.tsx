@@ -74,11 +74,12 @@ export class Dashboard<T extends LineInfo> extends React.Component<Props<T>, Sta
   };
 
   private renderChart(chart: ChartModel) {
-    const colors = this.props.colors || getTheme(ChartThemeColor.multi, ChartThemeVariant.default).chart.colorScale;
+    const colors = this.props.colors || getTheme(ChartThemeColor.multi, ChartThemeVariant.default).chart?.colorScale || [];
+    const sanitizedColors = Array.isArray(colors) ? colors : [colors];
     const dataSupplier = getDataSupplier(
       chart,
       { values: this.props.labelValues, prettifier: this.props.labelPrettifier },
-      colors
+      sanitizedColors
     );
     let onClick: ((datum: RawOrBucket<T>) => void) | undefined = undefined;
     if (this.props.onClick) {

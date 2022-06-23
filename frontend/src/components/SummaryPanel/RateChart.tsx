@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Chart, ChartBar, ChartStack, ChartAxis, ChartTooltip } from '@patternfly/react-charts';
 import { VictoryLegend } from 'victory';
+import { EventPropTypeInterface } from 'victory-core';
 
 import { PFColors } from '../../components/Pf/PfColors';
 import { SUMMARY_PANEL_CHART_WIDTH } from '../../types/Graph';
@@ -37,8 +38,28 @@ export class RateChart extends React.Component<Props, State> {
       right: 10
     };
     const events: VCEvent[] = [];
+    const eventProps: EventPropTypeInterface<string, string[] | number[] | string | number>[] = [];
     this.props.series.forEach((_, idx) => {
       addLegendEvent(events, {
+        legendName: this.props.baseName + '-legend',
+        idx: idx,
+        serieID: [this.props.baseName + '-bars-' + idx],
+        onClick: __ => {
+          // Same event can be fired for several targets, so make sure we only apply it once
+          if (!this.state.hiddenSeries.delete(idx)) {
+            // Was not already hidden => add to set
+            this.state.hiddenSeries.add(idx);
+          }
+          this.setState({ hiddenSeries: new Set(this.state.hiddenSeries) });
+          return null;
+        },
+        onMouseOver: props => {
+          return {
+            style: { ...props.style, strokeWidth: 4, fillOpacity: 0.5 }
+          };
+        }
+      });
+      addLegendEvent(eventProps, {
         legendName: this.props.baseName + '-legend',
         idx: idx,
         serieID: [this.props.baseName + '-bars-' + idx],
@@ -62,8 +83,8 @@ export class RateChart extends React.Component<Props, State> {
     const fontSizePx = getComputedStyle(document.body).getPropertyValue('--graph-side-panel--font-size-px');
     const horizontalAxisStyle = { tickLabels: { fontSize: fontSize, padding: 3 } };
     const verticalAxisStyle = singleBar
-      ? { tickLabels: { fill: 'none', fontSize: fontSize } }
-      : { tickLabels: { padding: 2, fontSize: fontSize } };
+      ? { tickLabels: { padding: 0, fill: 'none', fontSize: fontSize } }
+      : { tickLabels: { padding: 2, fill: 'none', fontSize: fontSize } };
     return (
       <Chart
         height={height}
@@ -71,10 +92,10 @@ export class RateChart extends React.Component<Props, State> {
         padding={padding}
         domainPadding={{ x: singleBar ? [15, 15] : [30, 25] }}
         domain={{ y: [0, 100] }}
-        events={events}
+        events={eventProps}
       >
         <ChartStack
-          colorScale={this.props.series.filter((_, idx) => !this.state.hiddenSeries.has(idx)).map(d => d.color)}
+          colorScale={this.props.series.filter((_, idx) => !this.state.hiddenSeries.has(idx)).map(d => d.color || "")}
           horizontal={true}
         >
           {this.props.series.map((datum, idx) => {

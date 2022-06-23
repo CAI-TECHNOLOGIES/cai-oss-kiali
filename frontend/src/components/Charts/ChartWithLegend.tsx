@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Chart, ChartGroup, ChartScatter, ChartProps, ChartTooltipProps } from '@patternfly/react-charts';
 import { VictoryAxis, VictoryBoxPlot, VictoryLabel, VictoryLegend, VictoryPortal, VictoryTheme } from 'victory';
+import { EventPropTypeInterface } from 'victory-core';
 import { format as d3Format } from 'd3-format';
 import { getFormatter, getUnit } from 'utils/Formatter';
 import { VCLines, LegendItem, LineInfo, RichDataPoint, RawOrBucket, VCDataPoint } from 'types/VictoryChartInfo';
@@ -139,19 +140,28 @@ class ChartWithLegend<T extends RichDataPoint, O extends LineInfo> extends React
     };
 
     const events: VCEvent[] = [];
+    const eventProps: EventPropTypeInterface<string, string[] | number[] | string | number>[] = [];
+    const eventHandlers = {
+      onClick: () => {
+        if (this.hoveredItem) {
+          this.props.onClick!(this.hoveredItem as RawOrBucket<O>);
+        }
+        return [];
+      },
+      onMouseOver: _ => { return [] },
+      onMouseOut: _ => { return [] },
+    }
     if (this.props.onClick) {
       events.push({
         target: 'parent',
-        eventHandlers: {
-          onClick: () => {
-            if (this.hoveredItem) {
-              this.props.onClick!(this.hoveredItem as RawOrBucket<O>);
-            }
-            return [];
-          }
-        }
+        eventHandlers: eventHandlers
       });
+      eventProps.push({
+        target: 'parent',
+        eventHandlers: eventHandlers
+      })
     }
+
     this.props.data.forEach((s, idx) =>
       this.registerEvents(events, idx, ['serie-' + idx, 'serie-reg-' + idx], s.legendItem.name)
     );
@@ -197,7 +207,7 @@ class ChartWithLegend<T extends RichDataPoint, O extends LineInfo> extends React
         <Chart
           width={this.state.width}
           padding={padding}
-          events={events}
+          events={eventProps}
           height={chartHeight}
           containerComponent={newBrushVoronoiContainer(
             labelComponent,
@@ -279,7 +289,6 @@ class ChartWithLegend<T extends RichDataPoint, O extends LineInfo> extends React
                 name={overlayName}
                 data={normalizedOverlay}
                 style={{
-                  data: this.props.overlay!.info.dataStyle,
                   min: { stroke: this.props.overlay!.info.lineInfo.color, strokeWidth: 2 },
                   max: { stroke: this.props.overlay!.info.lineInfo.color, strokeWidth: 2 },
                   q1: { fill: this.props.overlay!.info.lineInfo.color },
@@ -484,15 +493,15 @@ class ChartWithLegend<T extends RichDataPoint, O extends LineInfo> extends React
     return this.props.overrideSeriesComponentStyle === false
       ? props
       : {
-          ...props,
-          style: {
-            data: {
-              fill: this.props.fill ? color : undefined,
-              stroke: this.props.stroke ? color : undefined,
-              strokeDasharray: strokeDasharray === true ? '3 5' : undefined
-            }
+        ...props,
+        style: {
+          data: {
+            fill: this.props.fill ? color : undefined,
+            stroke: this.props.stroke ? color : undefined,
+            strokeDasharray: strokeDasharray === true ? '3 5' : undefined
           }
-        };
+        }
+      };
   };
 
   private handleResize = () => {
@@ -541,8 +550,8 @@ class ChartWithLegend<T extends RichDataPoint, O extends LineInfo> extends React
         return serieName === 'overlay'
           ? null
           : {
-              style: { ...props.style, strokeWidth: 4, fillOpacity: 0 }
-            };
+            style: { ...props.style, strokeWidth: 4, fillOpacity: 0 }
+          };
       },
       onMouseOut: () => {
         this.mouseOnLegend = false;
