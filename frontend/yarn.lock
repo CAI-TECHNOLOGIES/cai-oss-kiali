@@ -2787,13 +2787,13 @@
   resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-2.71.6.tgz#6385cbd5aaca2f59bf65496e0189c541a7f00a82"
   integrity sha512-mqqtuCVa+/FbyyK8hSAcfEIwNX73+zbnzHpmC4NrW0kyMzSszPtBqev/ZO79ZxGqZUpLOyUBTVaH7oKn8cL35Q==
 
-"@patternfly/react-charts@6.48.2":
-  version "6.48.2"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-charts/-/react-charts-6.48.2.tgz#4d5bed1cff3514f22abc6335239fd854cf1e87e0"
-  integrity sha512-qqOS254zFB3AzurTd9jSNxZ4kiH/umPJIab4XxsbjRWRl6+2OuNAHtfQ7Cy/InFKCUcerJelz/1ue8ExuLf2EQ==
+"@patternfly/react-charts@6.74.3":
+  version "6.74.3"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-charts/-/react-charts-6.74.3.tgz#be8da604f767ae73bf1ccedd5df675561b41bf44"
+  integrity sha512-kMjLUQkdgWOR2ZsKFdsCLAu8Z4aXg6Cl/Wz2alm08mr8KR/R05CzFbQTME/blhsZmreTpUW+59Rx+h3Q0/tMJw==
   dependencies:
-    "@patternfly/react-styles" "^4.45.2"
-    "@patternfly/react-tokens" "^4.47.2"
+    "@patternfly/react-styles" "^4.71.3"
+    "@patternfly/react-tokens" "^4.73.3"
     hoist-non-react-statics "^3.3.0"
     lodash "^4.17.19"
     tslib "^2.0.0"
@@ -2843,7 +2843,7 @@
     emotion "^9.2.9"
     emotion-server "^9.2.9"
 
-"@patternfly/react-styles@^4.45.2":
+"@patternfly/react-styles@^4.71.3":
   version "4.71.3"
   resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-4.71.3.tgz#4f1cf4624a675751f035dc3bfa4cb3c6ca48e43b"
   integrity sha512-JpMBIrJfco3JwK9KbJvjr+tKZidVhbkGrQT7GyWbYAwZ2bOmCmeCPJYc0xhAWcvNumn9a7AhYzAWPJVlQQue3g==
@@ -2866,7 +2866,7 @@
   resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-2.8.15.tgz#f62a569213ccb32ecdbd9da8709d6b5a55f8d215"
   integrity sha512-hhxWJ+gHqBxh5kWo6J23B9T5hvaRqwwtK5YoVscvv2skWIS+5XPLetVjhEmMoZ18MEcMHmpKkEri9s9Tj5jtlQ==
 
-"@patternfly/react-tokens@^4.47.2":
+"@patternfly/react-tokens@^4.73.3":
   version "4.73.3"
   resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.73.3.tgz#dae690220c25c242d2c45ec571e46d8cdcc7de13"
   integrity sha512-WyEcV9jiMZzscQMBhlDkypHw9qg0wbX7r/fe8HcWws+jnYWGVjwUdnr18ktI9aw/h/oQS46sirf8xbNTlIiQFg==
