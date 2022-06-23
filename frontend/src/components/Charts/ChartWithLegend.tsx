@@ -141,25 +141,22 @@ class ChartWithLegend<T extends RichDataPoint, O extends LineInfo> extends React
 
     const events: VCEvent[] = [];
     const eventProps: EventPropTypeInterface<string, string[] | number[] | string | number>[] = [];
-    const eventHandlers = {
-      onClick: () => {
-        if (this.hoveredItem) {
-          this.props.onClick!(this.hoveredItem as RawOrBucket<O>);
-        }
-        return [];
-      },
-      onMouseOver: _ => { return [] },
-      onMouseOut: _ => { return [] },
+    const event = {
+      target: 'parent',
+      eventHandlers: {
+        onClick: () => {
+          if (this.hoveredItem) {
+            this.props.onClick!(this.hoveredItem as RawOrBucket<O>);
+          }
+          return [];
+        },
+        onMouseOver: _ => { return [] },
+        onMouseOut: _ => { return [] },
+      }
     }
     if (this.props.onClick) {
-      events.push({
-        target: 'parent',
-        eventHandlers: eventHandlers
-      });
-      eventProps.push({
-        target: 'parent',
-        eventHandlers: eventHandlers
-      })
+      events.push(event);
+      eventProps.push(event)
     }
 
     this.props.data.forEach((s, idx) =>

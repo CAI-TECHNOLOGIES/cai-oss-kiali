@@ -40,7 +40,7 @@ export class RateChart extends React.Component<Props, State> {
     const events: VCEvent[] = [];
     const eventProps: EventPropTypeInterface<string, string[] | number[] | string | number>[] = [];
     this.props.series.forEach((_, idx) => {
-      addLegendEvent(events, {
+      const event = {
         legendName: this.props.baseName + '-legend',
         idx: idx,
         serieID: [this.props.baseName + '-bars-' + idx],
@@ -58,26 +58,9 @@ export class RateChart extends React.Component<Props, State> {
             style: { ...props.style, strokeWidth: 4, fillOpacity: 0.5 }
           };
         }
-      });
-      addLegendEvent(eventProps, {
-        legendName: this.props.baseName + '-legend',
-        idx: idx,
-        serieID: [this.props.baseName + '-bars-' + idx],
-        onClick: __ => {
-          // Same event can be fired for several targets, so make sure we only apply it once
-          if (!this.state.hiddenSeries.delete(idx)) {
-            // Was not already hidden => add to set
-            this.state.hiddenSeries.add(idx);
-          }
-          this.setState({ hiddenSeries: new Set(this.state.hiddenSeries) });
-          return null;
-        },
-        onMouseOver: props => {
-          return {
-            style: { ...props.style, strokeWidth: 4, fillOpacity: 0.5 }
-          };
-        }
-      });
+      }
+      addLegendEvent(events, event);
+      addLegendEvent(eventProps, event);
     });
     const fontSize = getComputedStyle(document.body).getPropertyValue('--graph-side-panel--font-size');
     const fontSizePx = getComputedStyle(document.body).getPropertyValue('--graph-side-panel--font-size-px');

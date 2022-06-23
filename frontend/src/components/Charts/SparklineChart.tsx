@@ -13,7 +13,7 @@ import { EventPropTypeInterface } from 'victory-core';
 
 import { VCLines, VCDataPoint, RichDataPoint } from 'types/VictoryChartInfo';
 import { CustomTooltip } from './CustomTooltip';
-import { VCEvent, addLegendEvent} from 'utils/VictoryEvents';
+import { VCEvent, addLegendEvent } from 'utils/VictoryEvents';
 
 
 type Props = ChartProps & {
@@ -80,7 +80,7 @@ export class SparklineChart extends React.Component<Props, State> {
       padding.bottom += legendHeight;
       height += legendHeight;
       this.props.series.forEach((_, idx) => {
-        addLegendEvent(events, {
+        const event = {
           legendName: this.props.name + '-legend',
           idx: idx,
           serieID: [this.props.name + '-area-' + idx],
@@ -97,25 +97,9 @@ export class SparklineChart extends React.Component<Props, State> {
               style: { ...props.style, strokeWidth: 4, fillOpacity: 0.5 }
             };
           }
-        });
-        addLegendEvent(eventProps, {
-          legendName: this.props.name + '-legend',
-          idx: idx,
-          serieID: [this.props.name + '-area-' + idx],
-          onClick: () => {
-            if (!this.state.hiddenSeries.delete(idx)) {
-              // Was not already hidden => add to set
-              this.state.hiddenSeries.add(idx);
-            }
-            this.setState({ hiddenSeries: new Set(this.state.hiddenSeries) });
-            return null;
-          },
-          onMouseOver: props => {
-            return {
-              style: { ...props.style, strokeWidth: 4, fillOpacity: 0.5 }
-            };
-          }
-        });
+        }
+        addLegendEvent(events, event);
+        addLegendEvent(eventProps, event);
       });
     }
 
