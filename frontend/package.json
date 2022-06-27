@@ -97,7 +97,7 @@
     "tippy.js": "3.4.1",
     "typesafe-actions": "3.2.1",
     "typestyle": "2.0.4",
-    "victory": "36.3.0",
+    "victory": "36",
     "visibilityjs": "2.0.2"
   },
   "devDependencies": {
@@ -115,15 +115,15 @@
     "axios-mock-adapter": "1.16.0",
     "cypress": "^9.2.1",
     "cypress-cucumber-preprocessor": "^4.3.1",
-    "cypress-react-selector": "^2.3.17",
     "cypress-multi-reporters": "^1.6.0",
-    "junit-report-merger": "^3.0.5",
-    "mocha-junit-reporter": "^2.0.2",
+    "cypress-react-selector": "^2.3.17",
     "enzyme": "3.11.0",
     "enzyme-to-json": "3.4.4",
     "husky": "1.3.1",
     "jest-canvas-mock": "2.2.0",
     "jest-localstorage-mock": "2.4.2",
+    "junit-report-merger": "^3.0.5",
+    "mocha-junit-reporter": "^2.0.2",
     "node-sass": "^7.0.1",
     "prettier": "2.0.5",
     "pretty-quick": "2.0.1",
@@ -137,7 +137,7 @@
     "minimist": "^1.2.6",
     "nth-check": "^2.0.1",
     "postcss": "^8.4.12",
-    "victory-core":"36.5.0"
+    "victory-core": ">=36.5.0"
   },
   "engines": {
     "node": ">=12.22.0 && <16",
