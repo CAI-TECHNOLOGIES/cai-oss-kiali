@@ -137,7 +137,8 @@
     "minimist": "^1.2.6",
     "nth-check": "^2.0.1",
     "postcss": "^8.4.12",
-    "victory-core": ">=36.5.0"
+    "victory-core": ">=36.5.0",
+    "moment": "2.29.4"
   },
   "engines": {
     "node": ">=12.22.0 && <16",
