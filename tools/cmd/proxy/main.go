@@ -184,7 +184,7 @@ func main() {
 	if httpsFlag {
 		log.Infof(serveMsgTmpl, "https")
 		customTransport := http.DefaultTransport.(*http.Transport)
-		customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		// customTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		proxy.httpProxy.Transport = customTransport
 		log.Fatal(http.ListenAndServeTLS(":10201", certFileFlag, keyFileFlag, proxy))
 	} else {
