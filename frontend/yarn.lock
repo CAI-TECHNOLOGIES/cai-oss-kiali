@@ -4936,13 +4936,13 @@ cytoscape-popper@1.0.7:
   dependencies:
     popper.js "^1.0.0"
 
-cytoscape@3.15.5:
-  version "3.15.5"
-  resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.15.5.tgz#34f4d5e54ffadbbbd044d5c041f17d251e741748"
-  integrity sha512-wkF2zkwvbBvT3Gj9ZVYhxqx6TvyZIuDx7Dhdy8m0z4QmDOXteMz+9oUgV+1btaBxA1VePZRUpoz1lwJixAyyYw==
+cytoscape@3.22.1:
+  version "3.22.1"
+  resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.22.1.tgz#bf9374193ce1d4dda31ef26a8997311a19e6077b"
+  integrity sha512-+wMWCXI+c6h7xhh0BQpttOPO7zIB7z6KyDd7D+8AkRhE9E6csXNnV5inBkdo2mxbBoll1jePVxXHqxA2J5cAog==
   dependencies:
     heap "^0.2.6"
-    lodash.debounce "^4.0.8"
+    lodash "^4.17.21"
 
 "d3-array@2 - 3", "d3-array@2.10.0 - 3", d3-array@^3.1.6:
   version "3.1.6"
