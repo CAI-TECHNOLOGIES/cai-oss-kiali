@@ -98,7 +98,7 @@
     "tippy.js": "3.4.1",
     "typesafe-actions": "3.2.1",
     "typestyle": "2.0.4",
-    "victory": "36",
+    "victory": "36.9.2",
     "visibilityjs": "2.0.2"
   },
   "devDependencies": {
