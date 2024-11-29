@@ -1919,10 +1919,10 @@
     lodash "^4.17.19"
     tslib "^2.0.0"
 
-"@patternfly/react-tokens@4.50.5":
-  version "4.50.5"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.50.5.tgz#5c68ce35002452b6664c55644b7299eb8545cfc1"
-  integrity sha512-u8+f4eevQdVC7w4jmy+ynIB9R7A9NlI2v5L8GMtkWLt3A0S4DBzNbU90MPSVwgfw0XHcvdFQjuK3OaS06M0bxw==
+"@patternfly/react-tokens@4.88.12":
+  version "4.88.12"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.88.12.tgz#6f5229e03d3b7c9330c95f21706952322f056f03"
+  integrity sha512-lmsirrLQJtgi1YGi3k3VyZp56VYAnvLwX9Xn0ElfwMVcXdL2Ls1Cy9agzU3tmVLR3JUKUcu1kUtl4gqmeqY/eA==
 
 "@patternfly/react-tokens@^4.50.19", "@patternfly/react-tokens@^4.50.5":
   version "4.50.19"
